@@ -17,9 +17,9 @@ elrond_wasm_node::wasm_endpoints! {
         proposeAddBoardMember
         proposeAddProposer
         proposeChangeQuorum
-        proposeEsdtTransferExecute
+        proposeEgldTransfer
+        proposeEsdtTransfer
         proposeRemoveUser
-        proposeTransferExecute
         quorumReached
         sign
         signed

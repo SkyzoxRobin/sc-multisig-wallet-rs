@@ -1,7 +1,7 @@
 use elrond_wasm::{
     api::ManagedTypeApi,
     types::{
-         BigUint, ManagedAddress, ManagedBuffer, ManagedVec, TokenIdentifier,
+         BigUint, ManagedAddress, ManagedVec, TokenIdentifier,
     },
 };
 

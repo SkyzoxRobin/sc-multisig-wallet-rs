@@ -51,7 +51,7 @@ pub trait MultisigProposeModule: crate::multisig_state::MultisigStateModule {
     /// Can send EGLD without calling anything.
     /// Can call smart contract endpoints directly.
     /// Doesn't really work with builtin functions.
-    #[endpoint(proposeTransferExecute)]
+    #[endpoint(proposeEgldTransfer)]
     fn propose_transfer_execute(
         &self,
         to: ManagedAddress,
@@ -76,7 +76,7 @@ pub trait MultisigProposeModule: crate::multisig_state::MultisigStateModule {
     /// Can send ESDT without calling anything.
     /// Can call smart contract endpoints directly.
     /// Doesn't really work with builtin functions.
-    #[endpoint(proposeEsdtTransferExecute)]
+    #[endpoint(proposeEsdtTransfer)]
     fn propose_esdt_transfer_execute(
         &self,
         to: ManagedAddress,
