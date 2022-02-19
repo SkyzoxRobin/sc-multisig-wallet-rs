@@ -1,4 +1,4 @@
-use crate::action::{Action, CallActionData, CallEsdtActionData};
+use crate::action::{Action, EgldTransferData, EsdtTransferData};
 
 elrond_wasm::imports!();
 
@@ -56,29 +56,19 @@ pub trait MultisigProposeModule: crate::multisig_state::MultisigStateModule {
         &self,
         to: ManagedAddress,
         egld_amount: BigUint,
-        #[var_args] opt_function: OptionalArg<ManagedBuffer>,
-        #[var_args] arguments: ManagedVarArgs<ManagedBuffer>,
     ) -> SCResult<usize> {
-        let call_data = self.prepare_call_data(to, egld_amount, opt_function, arguments);
-        self.propose_action(Action::SendTransferExecute(call_data))
+        let call_data = self.prepare_call_data(to, egld_amount);
+        self.propose_action(Action::SendEgldTransfer(call_data))
     }
 
     fn prepare_call_data(
         &self,
         to: ManagedAddress,
         egld_amount: BigUint,
-        opt_function: OptionalArg<ManagedBuffer>,
-        arguments: ManagedVarArgs<ManagedBuffer>,
-    ) -> CallActionData<Self::Api> {
-        let endpoint_name = match opt_function {
-            OptionalArg::Some(data) => data,
-            OptionalArg::None => ManagedBuffer::new(),
-        };
-        CallActionData {
+    ) -> EgldTransferData<Self::Api> {
+        EgldTransferData {
             to,
             egld_amount,
-            endpoint_name,
-            arguments: arguments.into_vec_of_buffers(),
         }
     }
 
@@ -92,11 +82,9 @@ pub trait MultisigProposeModule: crate::multisig_state::MultisigStateModule {
         to: ManagedAddress,
         token: TokenIdentifier,
         amount: BigUint,
-        #[var_args] opt_function: OptionalArg<ManagedBuffer>,
-        #[var_args] arguments: ManagedVarArgs<ManagedBuffer>,
     ) -> SCResult<usize> {
-        let call_data = self.prepare_transfer_esdt_data(to, token, amount, opt_function, arguments);
-        self.propose_action(Action::SendEsdtTransferExecute(call_data))
+        let call_data = self.prepare_transfer_esdt_data(to, token, amount);
+        self.propose_action(Action::SendEsdtTransfer(call_data))
     }
 
     fn prepare_transfer_esdt_data(
@@ -104,19 +92,11 @@ pub trait MultisigProposeModule: crate::multisig_state::MultisigStateModule {
         to: ManagedAddress,
         token: TokenIdentifier,
         amount: BigUint,
-        opt_function: OptionalArg<ManagedBuffer>,
-        arguments: ManagedVarArgs<ManagedBuffer>,
-    ) -> CallEsdtActionData<Self::Api> {
-        let endpoint_name = match opt_function {
-            OptionalArg::Some(data) => data,
-            OptionalArg::None => ManagedBuffer::new(),
-        };
-        CallEsdtActionData {
+    ) -> EsdtTransferData<Self::Api> {
+        EsdtTransferData {
             to,
             token,
             amount,
-            endpoint_name,
-            arguments: arguments.into_vec_of_buffers(),
         }
     }
 }

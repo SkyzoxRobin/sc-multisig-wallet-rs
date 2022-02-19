@@ -134,30 +134,21 @@ pub trait MultisigPerformModule: crate::multisig_state::MultisigStateModule {
                 );
                 self.quorum().set(new_quorum);
             },
-            Action::SendTransferExecute(call_data) => {
-                let result = Self::Api::send_api_impl().direct_egld_execute(
+            Action::SendEgldTransfer(call_data) => {
+                self.send().direct_egld(
                     &call_data.to,
                     &call_data.egld_amount,
-                    self.gas_for_transfer_exec(),
-                    &call_data.endpoint_name,
-                    &call_data.arguments.into(),
+                    &[]
                 );
-                if let Result::Err(e) = result {
-                    Self::Api::error_api_impl().signal_error(e);
-                }
             },
-            Action::SendEsdtTransferExecute(call_data) => {
-                let result = Self::Api::send_api_impl().direct_esdt_execute(
+            Action::SendEsdtTransfer(call_data) => {
+                self.send().direct(
                     &call_data.to,
                     &call_data.token,
+                    0,
                     &call_data.amount,
-                    self.gas_for_transfer_exec(),
-                    &call_data.endpoint_name,
-                    &call_data.arguments.into(),
-                );
-                if let Result::Err(e) = result {
-                    Self::Api::error_api_impl().signal_error(e);
-                }
+                    &[]
+                )
             },
         }
     }

@@ -8,20 +8,16 @@ use elrond_wasm::{
 elrond_wasm::derive_imports!();
 
 #[derive(NestedEncode, NestedDecode, TypeAbi)]
-pub struct CallActionData<M: ManagedTypeApi> {
+pub struct EgldTransferData<M: ManagedTypeApi> {
     pub to: ManagedAddress<M>,
     pub egld_amount: BigUint<M>,
-    pub endpoint_name: ManagedBuffer<M>,
-    pub arguments: ManagedVec<M, ManagedBuffer<M>>,
 }
 
 #[derive(NestedEncode, NestedDecode, TypeAbi)]
-pub struct CallEsdtActionData<M: ManagedTypeApi> {
+pub struct EsdtTransferData<M: ManagedTypeApi> {
     pub to: ManagedAddress<M>,
     pub token: TokenIdentifier<M>,
     pub amount: BigUint<M>,
-    pub endpoint_name: ManagedBuffer<M>,
-    pub arguments: ManagedVec<M, ManagedBuffer<M>>,
 }
 
 #[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, TypeAbi)]
@@ -31,8 +27,8 @@ pub enum Action<M: ManagedTypeApi> {
     AddProposer(ManagedAddress<M>),
     RemoveUser(ManagedAddress<M>),
     ChangeQuorum(usize),
-    SendTransferExecute(CallActionData<M>),
-    SendEsdtTransferExecute(CallEsdtActionData<M>),
+    SendEgldTransfer(EgldTransferData<M>),
+    SendEsdtTransfer(EsdtTransferData<M>),
 }
 
 impl<M: ManagedTypeApi> Action<M> {
