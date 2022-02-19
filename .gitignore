@@ -6,3 +6,5 @@
 # The erdpy output
 output
 wasm_view
+cargo.lock
+elrond.json
