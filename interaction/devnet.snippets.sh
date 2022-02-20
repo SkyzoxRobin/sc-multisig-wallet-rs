@@ -6,7 +6,6 @@ PEM="../../no-name.pem"
 LUCA="../../wallet-owner.pem" # board member 2
 
 # interaction 
-
 deploy() {
     quorum="0x$(printf '%x' 2)"
 
@@ -190,25 +189,61 @@ performAction() {
         --send || return
 }
 
-# views : todo 
+# views
 signed() {
     user="0x$(erdpy wallet bech32 --decode erd17yva92k3twysqdf4xfw3w0q8fun2z3ltpnkqldj59297mqp9nqjs9qvkwn)"
     action_id="0x$(printf '%x' 1)"
-
     erdpy --verbose contract query ${ADDRESS} --function="signed" --arguments $user $action_id --proxy=${PROXY}
 }
 
-getQuorum() {}
-getActionLastIndex() {}
-getNumBoardMembers() {}
-getNumProposers() {}
-quorumReached() {}
-getActionData() {}
-getActionSignerCount() {}
-getActionSigners() {}
-getActionValidSignerCount() {}
-getAllBoardMembers() {}
-getAllProposers() {}
+getQuorum() {
+    erdpy --verbose contract query ${ADDRESS} --function="getQuorum" --proxy=${PROXY}
+}
+
+getActionLastIndex() {
+    erdpy --verbose contract query ${ADDRESS} --function="getActionLastIndex" --proxy=${PROXY}
+}
+
+getNumBoardMembers() {
+    erdpy --verbose contract query ${ADDRESS} --function="getNumBoardMembers" --proxy=${PROXY}
+}
+
+getNumProposers() {
+    erdpy --verbose contract query ${ADDRESS} --function="getNumProposers" --proxy=${PROXY}
+}
+
+quorumReached() {
+    action_id="0x$(printf '%x' 1)"
+    erdpy --verbose contract query ${ADDRESS} --function="quorumReached" --arguments $action_id --proxy=${PROXY}
+}
+
+getActionData() {
+    action_id="0x$(printf '%x' 1)"
+    erdpy --verbose contract query ${ADDRESS} --function="getActionData" --arguments $action_id --proxy=${PROXY}
+}
+
+getActionSignerCount() {
+    action_id="0x$(printf '%x' 1)"
+    erdpy --verbose contract query ${ADDRESS} --function="getActionSignerCount" --arguments $action_id --proxy=${PROXY}
+}
+
+getActionSigners() {
+    action_id="0x$(printf '%x' 1)"
+    erdpy --verbose contract query ${ADDRESS} --function="getActionSigners" --arguments $action_id --proxy=${PROXY}
+}
+
+getActionValidSignerCount() {
+    action_id="0x$(printf '%x' 1)"
+    erdpy --verbose contract query ${ADDRESS} --function="getActionValidSignerCount" --arguments $action_id --proxy=${PROXY}
+}
+
+getAllBoardMembers() {
+    erdpy --verbose contract query ${ADDRESS} --function="getAllBoardMembers" --proxy=${PROXY}
+}
+
+getAllProposers() {
+    erdpy --verbose contract query ${ADDRESS} --function="getAllProposers" --proxy=${PROXY}
+}
 
 getPendingActionFullInfo() {
     erdpy --verbose contract query ${ADDRESS} --function="getPendingActionFullInfo" --proxy=${PROXY}
