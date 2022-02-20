@@ -3,15 +3,16 @@ PROXY="https://devnet-gateway.elrond.com"
 CHAIN="D"
 BYTECODE="output/multisig.wasm"
 PEM="../../no-name.pem"
+LUCA="../../wallet-owner.pem" # board member 2
 
 # interaction 
 
 deploy() {
     quorum="0x$(printf '%x' 2)"
 
-    # board member
+    # board members
     board_member_1="0x$(erdpy wallet bech32 --decode erd17frjmjj93klz0w9gh0xj76atp8lk7h2k4uhawe8yp5g0rusprn0qm7n49c)"
-    board_member_2="0x$(erdpy wallet bech32 --decode erd17frjmjj93klz0w9gh0xj76atp8lk7h2k4uhawe8yp5g0rusprn0qm7n49c)"
+    board_member_2="0x$(erdpy wallet bech32 --decode erd17yva92k3twysqdf4xfw3w0q8fun2z3ltpnkqldj59297mqp9nqjs9qvkwn)"
 
     erdpy --verbose contract deploy --bytecode="$BYTECODE" --recall-nonce \
         --pem=$PEM \
@@ -35,19 +36,18 @@ depositEgld() {
         --pem=${PEM} \
         --proxy=${PROXY} --chain=${CHAIN} \
         --gas-limit=10000000 \
-        --value=100000000000000000 \ # 1 EGLD
+        --value=1000000000000000000 \
         --function="deposit" \
-        --arguments $to \
         --send || return
 }
 
 depositEsdt() {
-    token="0x$(echo -n 'ticker' | xxd -p -u | tr -d '\n')"
-    amount="0x$(printf '%x' AMOUNT)"
+    token="0x$(echo -n 'AEGLD-6e6df3' | xxd -p -u | tr -d '\n')"
+    amount="0x$(printf '%x' 1000000000000000000)"
     method="0x$(echo -n 'deposit' | xxd -p -u | tr -d '\n')"
     
         erdpy --verbose contract call ${ADDRESS} --recall-nonce \
-        --pem=${PEM} \
+        --pem=${LUCA} \
         --proxy=${PROXY} --chain=${CHAIN} \
         --gas-limit=10000000 \
         --function="ESDTTransfer" \
@@ -117,7 +117,7 @@ discardAction() {
 
 proposeEgldTransfer() {
     to="0x$(erdpy wallet bech32 --decode erd17frjmjj93klz0w9gh0xj76atp8lk7h2k4uhawe8yp5g0rusprn0qm7n49c)"
-    egld_amount="0x$(printf '%x' 100000000000000000)"
+    egld_amount="0x$(printf '%x' 1000000000000000000)"
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=${PEM} \
@@ -130,8 +130,8 @@ proposeEgldTransfer() {
 
 proposeEsdtTransfer() {
     to="0x$(erdpy wallet bech32 --decode erd17frjmjj93klz0w9gh0xj76atp8lk7h2k4uhawe8yp5g0rusprn0qm7n49c)"
-    token="0x$(echo -n 'TICKER' | xxd -p -u | tr -d '\n')"
-    amount="0x$(printf '%x' AMOUNT)"
+    token="0x$(echo -n 'AEGLD-6e6df3' | xxd -p -u | tr -d '\n')"
+    amount="0x$(printf '%x' 1000000000000000000)"
 
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=$PEM \
@@ -143,10 +143,22 @@ proposeEsdtTransfer() {
 }
 
 sign() {
-    action_id="0x$(printf '%x' 2)"
+    action_id="0x$(printf '%x' 3)"
     
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=${PEM} \
+        --proxy=${PROXY} --chain=${CHAIN} \
+        --gas-limit=10000000 \
+        --function="sign" \
+        --arguments $action_id \
+        --send || return
+}
+
+signBoardMember() {
+    action_id="0x$(printf '%x' 3)"
+    
+    erdpy --verbose contract call ${ADDRESS} --recall-nonce \
+        --pem=${LUCA} \
         --proxy=${PROXY} --chain=${CHAIN} \
         --gas-limit=10000000 \
         --function="sign" \
@@ -167,7 +179,7 @@ unsign() {
 }
 
 performAction() {
-    action_id="0x$(printf '%x' 2)"
+    action_id="0x$(printf '%x' 3)"
     
     erdpy --verbose contract call ${ADDRESS} --recall-nonce \
         --pem=${PEM} \
@@ -179,7 +191,13 @@ performAction() {
 }
 
 # views : todo 
-signed() {}
+signed() {
+    user="0x$(erdpy wallet bech32 --decode erd17yva92k3twysqdf4xfw3w0q8fun2z3ltpnkqldj59297mqp9nqjs9qvkwn)"
+    action_id="0x$(printf '%x' 1)"
+
+    erdpy --verbose contract query ${ADDRESS} --function="signed" --arguments $user $action_id --proxy=${PROXY}
+}
+
 getQuorum() {}
 getActionLastIndex() {}
 getNumBoardMembers() {}
@@ -191,5 +209,12 @@ getActionSigners() {}
 getActionValidSignerCount() {}
 getAllBoardMembers() {}
 getAllProposers() {}
-getPendingActionFullInfo() {}
-userRole() {}
+
+getPendingActionFullInfo() {
+    erdpy --verbose contract query ${ADDRESS} --function="getPendingActionFullInfo" --proxy=${PROXY}
+}
+
+userRole() {
+    user="0x$(erdpy wallet bech32 --decode erd17frjmjj93klz0w9gh0xj76atp8lk7h2k4uhawe8yp5g0rusprn0qm7n49c)"
+    erdpy --verbose contract query ${ADDRESS} --function="userRole" --arguments $user --proxy=${PROXY}
+}
