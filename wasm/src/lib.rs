@@ -9,9 +9,16 @@ elrond_wasm_node::wasm_endpoints! {
     (
         deposit
         discardAction
+        getActionData
         getActionLastIndex
+        getActionSignerCount
+        getActionSigners
+        getActionValidSignerCount
+        getAllBoardMembers
+        getAllProposers
         getNumBoardMembers
         getNumProposers
+        getPendingActionFullInfo
         getQuorum
         performAction
         proposeAddBoardMember
@@ -24,6 +31,7 @@ elrond_wasm_node::wasm_endpoints! {
         sign
         signed
         unsign
+        userRole
     )
 }
 
